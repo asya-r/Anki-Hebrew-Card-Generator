@@ -74,6 +74,8 @@ class HebrewCard(NamedTuple):
             self.Image,
         ]
 
+def leave_stress(content) -> str:
+    return ''.join(str(item) for item in content)
 
 def convert_shoresh(shoresh: str) -> str:
     if not shoresh:
@@ -148,13 +150,13 @@ def convert_noun(soup) -> HebrewCard:
     t1 = soup.find("table", class_="conjugation-table")
 
     singular = t1.find("div", id="s").find("span", class_="menukad").text
-    singular_pr = t1.find("div", id="s").find("div", class_="transcription").text
+    singular_pr = leave_stress(t1.find("div", id="s").find("div", class_="transcription"))
 
     plural_div = t1.find("div", id="p")
     plural, plural_pr = "", ""
     if plural_div is not None:
         plural = plural_div.find("span", class_="menukad").text
-        plural_pr = plural_div.find("div", class_="transcription").text
+        plural_pr = leave_stress(plural_div.find("div", class_="transcription"))
 
     gender = None
     for p in soup.find_all("p"):
@@ -187,14 +189,14 @@ def convert_adj(soup):
     t1 = soup.find("table", class_="conjugation-table")
 
     m_singular = t1.find("div", id="ms-a").find("span", class_="menukad").parent.text
-    m_singular_pr = t1.find("div", id="ms-a").find("div", class_="transcription").text
+    m_singular_pr = leave_stress(t1.find("div", id="ms-a").find("div", class_="transcription"))
     m_plural = t1.find("div", id="mp-a").find("span", class_="menukad").parent.text
-    m_plural_pr = t1.find("div", id="mp-a").find("div", class_="transcription").text
+    m_plural_pr = leave_stress(t1.find("div", id="mp-a").find("div", class_="transcription"))
 
     f_singular = t1.find("div", id="fs-a").find("span", class_="menukad").parent.text
-    f_singular_pr = t1.find("div", id="fs-a").find("div", class_="transcription").text
+    f_singular_pr = leave_stress(t1.find("div", id="fs-a").find("div", class_="transcription"))
     f_plural = t1.find("div", id="fp-a").find("span", class_="menukad").parent.text
-    f_plural_pr = t1.find("div", id="fp-a").find("div", class_="transcription").text
+    f_plural_pr = leave_stress(t1.find("div", id="fp-a").find("div", class_="transcription"))
 
     gender = ""
 
