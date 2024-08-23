@@ -116,7 +116,7 @@ def convert_verb(soup) -> HebrewCard:
     for peal, jinj in pealim_to_jinja.items():
         div = soup.find("div", id=peal)
         word = div.find("span", class_="menukad").text
-        pron = div.find("div", class_="transcription").text
+        pron = leave_stress(div.find("div", class_="transcription"))
         td = f"<ruby>{word}<rt>{pron}</rt></ruby>"
         out_dict[jinj] = td
 
