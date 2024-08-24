@@ -218,12 +218,16 @@ def convert_adv(soup) -> HebrewCard:
     shoresh = None
     for p in soup.find_all("p"):
         if p.text.startswith("Root:"):
-            shoresh = p.find("span").text
+            shoresh = convert_shoresh(p.find("span").text)
+            
+        # TODO: the field in anki shows the text from right to left, so in this case it's broken
+        if p.text.startswith("Derived from"):
+            shoresh = p.text
 
     definition = soup.find("div", class_="lead").text
     name = soup.find("div").find("span", class_="menukad").text
     name_pr = leave_stress(soup.find("div").find("div", class_="transcription"))
-    
+
     gender = ""
     inflections = ""
 
@@ -232,7 +236,7 @@ def convert_adv(soup) -> HebrewCard:
         Definition=definition,
         Gender=gender,
         PartOfSpeech="adv",
-        Shoresh=convert_shoresh(shoresh),
+        Shoresh=shoresh or "",
         Audio="",
         Inflections=inflections,
         Extended=f"{name_pr}",
