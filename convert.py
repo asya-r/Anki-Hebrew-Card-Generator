@@ -58,7 +58,7 @@ class HebrewCard(NamedTuple):
         if self.Gender not in ["", "נ", "ז", "פָּעַ", "פִּעֵ", "הִפְ", "הִתְ", "נִפְ"]:
             self.Gender = ""
 
-        if self.PartOfSpeech not in ["n", "v", "a", ""]:
+        if self.PartOfSpeech not in ["n", "v", "adj", "adv", ""]:
             self.PartOfSpeech = ""
 
     def to_list(self) -> List[str]:
@@ -79,7 +79,7 @@ def leave_stress(content) -> str:
 
 def convert_shoresh(shoresh: str) -> str:
     if not shoresh:
-        return
+        return ""
     shoresh = shoresh.replace("-", "־")
     shoresh = "".join(shoresh.split())
     return shoresh
@@ -204,7 +204,7 @@ def convert_adj(soup):
         Hebrew=f"{m_singular} / {f_singular}",
         Definition=definition,
         Gender=gender,
-        PartOfSpeech="n",
+        PartOfSpeech="adj",
         Shoresh=convert_shoresh(shoresh),
         Audio="",
         Inflections=f"{m_plural} / {f_plural}",
@@ -213,13 +213,42 @@ def convert_adj(soup):
     )
 
 
+
+def convert_adv(soup) -> HebrewCard:
+    shoresh = None
+    for p in soup.find_all("p"):
+        if p.text.startswith("Root:"):
+            shoresh = p.find("span").text
+
+    definition = soup.find("div", class_="lead").text
+    name = soup.find("div").find("span", class_="menukad").text
+    name_pr = leave_stress(soup.find("div").find("div", class_="transcription"))
+    
+    gender = ""
+    inflections = ""
+
+    return HebrewCard(
+        Hebrew=name,
+        Definition=definition,
+        Gender=gender,
+        PartOfSpeech="adv",
+        Shoresh=convert_shoresh(shoresh),
+        Audio="",
+        Inflections=inflections,
+        Extended=f"{name_pr}",
+        Image="",
+    )
+
+
 def extract_pos(text: str):
     if "noun" in text.lower():
         return convert_noun
-    if "verb" in text.lower():
+    if "verb" == text.lower():
         return convert_verb
     if "adjective" in text.lower():
         return convert_adj
+    if "adverb" in text.lower():
+        return convert_adv
 
 
 def get_subheader(soup) -> str:
