@@ -247,13 +247,13 @@ def convert_adv(soup) -> HebrewCard:
 def extract_pos(text: str):
     if "noun" in text.lower():
         return convert_noun
-    if "verb" == text.lower():
+    if "adverb" in text.lower():
+        return convert_adv
+    if "verb" in text.lower():
         return convert_verb
     if "adjective" in text.lower():
         return convert_adj
-    if "adverb" in text.lower():
-        return convert_adv
-
+    
 
 def get_subheader(soup) -> str:
     return soup.find("h2", class_="page-header").nextSibling.text
